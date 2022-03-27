@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Text, StyleSheet, View, Button, Alert } from "react-native";
-import { removeAlarm } from "../../models";
-import { getDayByDate } from "../../shared";
+import { removeAlarmFx } from "../../models";
 import { Alarm } from "../../type";
 
 export interface AlarmItem {
@@ -9,11 +8,8 @@ export interface AlarmItem {
 }
 
 export const AlarmItem = ({ alarm }: AlarmItem) => {
-  const { time, dateTimes, id } = alarm;
-  const days = useMemo(
-    () => dateTimes.map((x) => getDayByDate(x).text),
-    [dateTimes]
-  );
+  const { time, days: dateTimes, channelId } = alarm;
+  const days = useMemo(() => dateTimes.map((x) => x.text), [dateTimes]);
 
   const onRemove = () => {
     Alert.alert("Удалить?", "", [
@@ -21,7 +17,7 @@ export const AlarmItem = ({ alarm }: AlarmItem) => {
         text: "Cancel",
         style: "cancel",
       },
-      { text: "OK", onPress: () => removeAlarm(id) },
+      { text: "OK", onPress: () => removeAlarmFx({ channelId }) },
     ]);
   };
 

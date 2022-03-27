@@ -5,7 +5,7 @@ export interface Day {
 }
 
 export interface Alarm {
-  dateTimes: Date[];
-  id: string;
+  days: Day[];
+  channelId: string;
   time: string;
 }

@@ -1,11 +1,15 @@
 import { useStore } from "effector-react";
-import React from "react";
-import { Button, Text, StyleSheet, View, ScrollView } from "react-native";
-import { $alarmList } from "../../models";
+import React, { useEffect } from "react";
+import { Button, StyleSheet, View, ScrollView } from "react-native";
+import { $alarmList, getAllAlarmsFx } from "../../models";
 import { AlarmItem } from "./alarm-item";
 
 export const AlarmList = ({ navigation }: { navigation: any }) => {
   const alarmList = useStore($alarmList);
+  useEffect(() => {
+    //removeAllAlarmsFx();
+    getAllAlarmsFx();
+  }, []);
   return (
     <View style={styles.container}>
       <Button
@@ -14,7 +18,7 @@ export const AlarmList = ({ navigation }: { navigation: any }) => {
       />
       <ScrollView style={styles.containerText}>
         {alarmList.map((x) => (
-          <AlarmItem key={x.id} alarm={x} />
+          <AlarmItem key={x.channelId} alarm={x} />
         ))}
       </ScrollView>
     </View>

@@ -1,25 +1,5 @@
 import { Day } from "../../type";
 
-export const getNearestDate = (
-  targetDayIndex: number,
-  time: { hh: number; mm: number }
-) => {
-  const date = new Date();
-  date.setHours(time.hh, time.mm, 0, 0);
-
-  const targetDate = new Date();
-  targetDate.setHours(time.hh, time.mm, 0, 0);
-
-  const delta = targetDayIndex - date.getDay();
-
-  if (delta >= 0) {
-    targetDate.setDate(date.getDate() + delta);
-  } else {
-    targetDate.setDate(date.getDate() + 7 + delta);
-  }
-  return targetDate;
-};
-
 export const createDays = () => {
   return [
     {
@@ -63,4 +43,9 @@ export const createDays = () => {
 export const getDayByDate = (x: Date) => {
   const days = createDays().sort((a, b) => a.index - b.index);
   return days[x.getDay()];
+};
+
+export const getDayByIndex = (x: number) => {
+  const days = createDays().sort((a, b) => a.index - b.index);
+  return days[x];
 };

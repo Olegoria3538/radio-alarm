@@ -1,14 +1,18 @@
-import { createEvent, createStore } from "effector";
 import React from "react";
 import { StyleSheet } from "react-native";
 import "./src/models";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AddAlarm, AlarmList } from "./src/features";
+import * as Notifications from "expo-notifications";
 
-const $counter = createStore(0);
-const add = createEvent<number>();
-$counter.on(add, (s, x) => s + x);
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
 
 const Stack = createNativeStackNavigator();
 
