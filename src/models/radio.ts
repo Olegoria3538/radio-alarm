@@ -53,7 +53,7 @@ forward({ from: playRadioFx.doneData.map(() => true), to: setRadioPlayed });
 /**
  * остановить воспроизводения аудио
  */
-export const stopRadioFx = createRadioFx((radio) => radio.sound.unloadAsync());
+export const stopRadioFx = createRadioFx((radio) => radio.sound.stopAsync());
 forward({ from: stopRadioFx.doneData.map(() => false), to: setRadioPlayed });
 
 /**
