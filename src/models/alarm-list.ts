@@ -6,6 +6,9 @@ import { getDayByIndex } from "../shared";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 10);
 
+/**
+ * коллекция будильников
+ */
 export const $alarmList = createStore<Alarm[]>([]);
 
 /**
@@ -102,3 +105,11 @@ export const removeAllAlarmsFx = createEffect({
   },
 });
 $alarmList.on(removeAllAlarmsFx.doneData, () => []);
+
+/**
+ * тригер на получение уведомления
+ */
+export const triggerNotifictionsGet = createEvent<Notifications.Notification>();
+Notifications.addNotificationReceivedListener((notification) => {
+  triggerNotifictionsGet(notification);
+});

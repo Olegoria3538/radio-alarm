@@ -1,14 +1,34 @@
-import { attach, createEffect, createEvent, createStore } from "effector";
+import {
+  attach,
+  createEffect,
+  createEvent,
+  createStore,
+  forward,
+} from "effector";
 import { Audio } from "expo-av";
+import { triggerNotifictionsGet } from "./alarm-list";
 import { Radio } from "./types";
 
+/**
+ * флаг на инициализацию expo аудио
+ */
 export const $loadRadio = createStore(false);
-export const $radio = createStore<Radio>({} as Radio);
 
+/**
+ * экземляр expo audio
+ */
+export const $radio = createStore<Radio>({} as Radio);
 const setRadio = createEvent<Radio>();
 
 $loadRadio.on(setRadio, () => true);
 $radio.on(setRadio, (_, x) => x);
+
+/**
+ * флаг играет ли сейчас радио
+ */
+export const $radioPlayed = createStore(false);
+export const setRadioPlayed = createEvent<boolean>();
+$radioPlayed.on(setRadioPlayed, (_, x) => x);
 
 const createRadioFx = <T>(fn: (x: Radio) => Promise<T>) => {
   const fx = attach({
@@ -24,8 +44,22 @@ const createRadioFx = <T>(fn: (x: Radio) => Promise<T>) => {
   return fx;
 };
 
+/**
+ * начать воспроизводить аудио
+ */
 export const playRadioFx = createRadioFx((radio) => radio.sound.playAsync());
+forward({ from: playRadioFx.doneData.map(() => true), to: setRadioPlayed });
+
+/**
+ * остановить воспроизводения аудио
+ */
 export const stopRadioFx = createRadioFx((radio) => radio.sound.unloadAsync());
+forward({ from: stopRadioFx.doneData.map(() => false), to: setRadioPlayed });
+
+/**
+ * при получения уведомления вызываем радио
+ */
+forward({ from: triggerNotifictionsGet, to: playRadioFx });
 
 (async () => {
   await Audio.setAudioModeAsync({
