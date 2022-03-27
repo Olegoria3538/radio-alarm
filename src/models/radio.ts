@@ -11,7 +11,7 @@ $loadRadio.on(setRadio, () => true);
 $radio.on(setRadio, (_, x) => x);
 
 const createRadioFx = <T>(fn: (x: Radio) => Promise<T>) => {
-  return attach({
+  const fx = attach({
     source: $radio,
     effect: createEffect({
       handler: async (radio: Radio) => {
@@ -20,12 +20,23 @@ const createRadioFx = <T>(fn: (x: Radio) => Promise<T>) => {
     }),
     mapParams: (_: void, x) => x,
   });
+  $radio.on(fx.done, (s) => ({ ...s }));
+  return fx;
 };
 
 export const playRadioFx = createRadioFx((radio) => radio.sound.playAsync());
 export const stopRadioFx = createRadioFx((radio) => radio.sound.unloadAsync());
 
 (async () => {
+  await Audio.setAudioModeAsync({
+    allowsRecordingIOS: false,
+    staysActiveInBackground: true,
+    interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+    playsInSilentModeIOS: true,
+    shouldDuckAndroid: true,
+    interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+    playThroughEarpieceAndroid: false,
+  });
   const radio = await Audio.Sound.createAsync({
     uri: "http://onair.100fmlive.dk/100fm_live.mp3?ua=WEB",
   });

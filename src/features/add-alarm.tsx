@@ -1,12 +1,16 @@
-import React from "react";
-import { StyleSheet, TextInput, SafeAreaView, Button } from "react-native";
-import { DateTimePicker } from "../shared/ui";
+import React, { useState } from "react";
+import { StyleSheet, SafeAreaView, Button } from "react-native";
+import { Day, DayPicker, TimePicker } from "../shared/ui";
 
 export const AddAlarm = () => {
+  const [selectedDays, setSelectedDays] = useState<Day[]>([]);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+
   return (
     <SafeAreaView style={styles.container}>
-      <Button title="kek" onPress={() => {}} />
-      <DateTimePicker value={new Date()} />
+      <DayPicker onChange={({ days }) => setSelectedDays(days)} />
+      <TimePicker onChange={setSelectedTime} />
+      <Button title="Add" onPress={() => {}} />
     </SafeAreaView>
   );
 };

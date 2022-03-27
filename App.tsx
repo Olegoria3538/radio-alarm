@@ -4,6 +4,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { AddAlarm } from "./src/features/add-alarm";
 import { $activeScreen } from "./src/models/screen-controller";
+import "./src/models";
 
 const $counter = createStore(0);
 const add = createEvent<number>();
