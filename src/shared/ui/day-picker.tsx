@@ -1,43 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-
-export interface Day {
-  text: string;
-  key: string;
-}
-
-const createDays = () => {
-  return [
-    {
-      text: "П",
-      key: "monday",
-    },
-    {
-      text: "В",
-      key: "tuesday",
-    },
-    {
-      text: "С",
-      key: "wednesday",
-    },
-    {
-      text: "Ч",
-      key: "thursday",
-    },
-    {
-      text: "П",
-      key: "friday",
-    },
-    {
-      text: "С",
-      key: "saturday",
-    },
-    {
-      text: "В",
-      key: "sunday",
-    },
-  ] as Day[];
-};
+import { Day } from "../../type";
+import { createDays } from "../utils";
 
 interface DayPicker {
   onChange?: (x: {
@@ -63,6 +27,7 @@ export const DayPicker = ({ onChange }: DayPicker) => {
     <View style={styles.container}>
       {days.map((x, i) => (
         <TouchableOpacity
+          key={x.key}
           style={{
             ...styles.btn,
             marginLeft: i === 0 ? 0 : 5,

@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-community/datetimepicker": "4.0.0",
     "@react-navigation/native": "^6.0.8",
+    "@react-navigation/native-stack": "^6.5.2",
     "effector": "^22.2.0",
     "effector-react": "^22.0.6",
     "expo": "~44.0.0",

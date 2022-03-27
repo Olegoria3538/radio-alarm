@@ -1,23 +1,26 @@
 import { createEvent, createStore } from "effector";
-import { useStore } from "effector-react";
 import React from "react";
 import { StyleSheet } from "react-native";
-import { AddAlarm } from "./src/features/add-alarm";
-import { $activeScreen } from "./src/models/screen-controller";
 import "./src/models";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { AddAlarm, AlarmList } from "./src/features";
 
 const $counter = createStore(0);
 const add = createEvent<number>();
 $counter.on(add, (s, x) => s + x);
 
+const Stack = createNativeStackNavigator();
+
 export default function App() {
-  const activeScreen = useStore($activeScreen);
-  switch (activeScreen) {
-    case "addAlarm":
-      return <AddAlarm />;
-    default:
-      return null;
-  }
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Alarm list" component={AlarmList} />
+        <Stack.Screen name="Add alarm" component={AddAlarm} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
 
 const styles = StyleSheet.create({

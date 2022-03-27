@@ -19,7 +19,11 @@ export const TimePicker = ({ onChange }: TimePicker) => {
   return (
     <>
       <TouchableOpacity onPress={() => setShow(true)}>
-        <TextInput style={styles.input} value={time || ""} editable={false} />
+        <TextInput
+          style={styles.input}
+          value={time || "Select time"}
+          editable={false}
+        />
       </TouchableOpacity>
       {show ? (
         <DateTimePickerFuck
