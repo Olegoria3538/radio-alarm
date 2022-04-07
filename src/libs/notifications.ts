@@ -14,9 +14,13 @@ export const removeNotificationsByChanelId = async (id: string) => {
 export const createGroupNotificationsByChanelId = async ({
   id,
   indexDays,
+  hh,
+  mm,
 }: {
   id: string;
   indexDays: number[];
+  hh: number;
+  mm: number;
 }) => {
   const createNotifications = (weekdayIndex: number) => {
     return Notifications.scheduleNotificationAsync({
@@ -25,8 +29,10 @@ export const createGroupNotificationsByChanelId = async ({
       },
       trigger: {
         channelId: id,
-        seconds: 2,
-        // repeats: true,
+        weekday: weekdayIndex,
+        hour: hh,
+        minute: mm,
+        repeats: true,
       },
     });
   };

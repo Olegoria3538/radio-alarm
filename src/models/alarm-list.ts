@@ -85,7 +85,8 @@ const addAlarm = async ({ time, days }: { time: string; days: number[] }) => {
   await transactionBd(
     `insert into ${TABEL_NAME} (id, time, days, disable) values ('${id}', '${time}', '${days.join()}', ${0})`
   );
-  await createGroupNotificationsByChanelId({ id, indexDays: days });
+  const [hh, mm] = time.split(":").map(Number);
+  await createGroupNotificationsByChanelId({ id, indexDays: days, hh, mm });
   return id;
 };
 
@@ -111,9 +112,12 @@ const toggleAlarm = async (alarm: Alarm) => {
   if (newDisable) {
     await removeNotificationsByChanelId(alarm.channelId);
   } else {
+    const [hh, mm] = alarm.time.split(":").map(Number);
     await createGroupNotificationsByChanelId({
       id: alarm.channelId,
       indexDays: alarm.days.map((x) => x.index),
+      hh,
+      mm,
     });
   }
 };
