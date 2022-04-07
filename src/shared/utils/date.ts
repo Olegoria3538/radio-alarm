@@ -46,6 +46,5 @@ export const getDayByDate = (x: Date) => {
 };
 
 export const getDayByIndex = (x: number) => {
-  const days = createDays().sort((a, b) => a.index - b.index);
-  return days[x];
+  return createDays().find((d) => d.index === x);
 };

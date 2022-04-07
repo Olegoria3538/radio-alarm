@@ -1,13 +1,13 @@
 import { useStore } from "effector-react";
 import React, { useEffect } from "react";
 import { Button, StyleSheet, View, ScrollView } from "react-native";
-import { $alarmList, getAllAlarmsFx } from "../../models";
+import { $alarmList, getAllAlarmsFx, removeAllAlarmsFx } from "../../models";
 import { AlarmItem } from "./alarm-item";
 
 export const AlarmList = ({ navigation }: { navigation: any }) => {
   const alarmList = useStore($alarmList);
   useEffect(() => {
-    //removeAllAlarmsFx();
+    // removeAllAlarmsFx();
     getAllAlarmsFx();
   }, []);
   return (

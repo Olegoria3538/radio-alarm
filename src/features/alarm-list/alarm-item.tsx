@@ -17,7 +17,7 @@ export const AlarmItem = ({ alarm }: AlarmItem) => {
         text: "Cancel",
         style: "cancel",
       },
-      { text: "OK", onPress: () => removeAlarmFx({ channelId }) },
+      { text: "OK", onPress: () => removeAlarmFx(channelId) },
     ]);
   };
 
@@ -27,7 +27,10 @@ export const AlarmItem = ({ alarm }: AlarmItem) => {
         <Text style={styles.time}>{time}</Text>
         <View style={styles.row}>
           {days.map((x, i) => (
-            <Text style={{ ...styles.day, marginLeft: i === 0 ? 0 : 5 }}>
+            <Text
+              key={i}
+              style={{ ...styles.day, marginLeft: i === 0 ? 0 : 5 }}
+            >
               {x}
             </Text>
           ))}
