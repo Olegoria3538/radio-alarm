@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { Text, StyleSheet, View, Button, Alert } from "react-native";
-import { removeAlarmFx } from "../../models";
+import React, { useMemo } from "react";
+import { Text, StyleSheet, View, Button, Alert, Switch } from "react-native";
+import { removeAlarmFx, toggleAlarmFx } from "../../models";
 import { Alarm } from "../../type";
 
 export interface AlarmItem {
@@ -8,7 +8,7 @@ export interface AlarmItem {
 }
 
 export const AlarmItem = ({ alarm }: AlarmItem) => {
-  const { time, days: dateTimes, channelId } = alarm;
+  const { time, days: dateTimes, channelId, disable } = alarm;
   const days = useMemo(() => dateTimes.map((x) => x.text), [dateTimes]);
 
   const onRemove = () => {
@@ -24,7 +24,18 @@ export const AlarmItem = ({ alarm }: AlarmItem) => {
   return (
     <View style={styles.wrapper}>
       <View style={{ flex: 1 }}>
-        <Text style={styles.time}>{time}</Text>
+        <View style={styles.row}>
+          <Switch
+            trackColor={{ false: "#767577", true: "#81b0ff" }}
+            thumbColor={!disable ? "#f5dd4b" : "#f4f3f4"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={() => {
+              toggleAlarmFx(alarm);
+            }}
+            value={!disable}
+          />
+          <Text style={styles.time}>{time}</Text>
+        </View>
         <View style={styles.row}>
           {days.map((x, i) => (
             <Text

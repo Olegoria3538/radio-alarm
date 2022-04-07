@@ -5,6 +5,10 @@ import { customAlphabet } from "nanoid/non-secure";
 import { getDayByIndex } from "../shared";
 import * as SQLite from "expo-sqlite";
 import { SQLResultSet, SQLTransaction } from "expo-sqlite";
+import {
+  createGroupNotificationsByChanelId,
+  removeNotificationsByChanelId,
+} from "../libs";
 
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 10);
 
@@ -81,19 +85,8 @@ const addAlarm = async ({ time, days }: { time: string; days: number[] }) => {
   await transactionBd(
     `insert into ${TABEL_NAME} (id, time, days, disable) values ('${id}', '${time}', '${days.join()}', ${0})`
   );
-  const createNotifications = (weekdayIndex: number) => {
-    return Notifications.scheduleNotificationAsync({
-      content: {
-        title: "AWESOME ALARM!",
-      },
-      trigger: {
-        channelId: id,
-        seconds: 2,
-        // repeats: true,
-      },
-    });
-  };
-  await Promise.all(days.map((x) => createNotifications(x + 1)));
+  await createGroupNotificationsByChanelId({ id, indexDays: days });
+  return id;
 };
 
 /**
@@ -101,14 +94,28 @@ const addAlarm = async ({ time, days }: { time: string; days: number[] }) => {
  */
 const removeAlarm = async (id: string) => {
   await transactionBd(`delete from ${TABEL_NAME} where id = '${id}';`);
-  await Notifications.deleteNotificationChannelAsync(id);
-  const notifi = await Notifications.getAllScheduledNotificationsAsync();
-  await Promise.all(
-    notifi
-      .filter((x) => (x.trigger as any).channelId === id)
-      .map((x) => Notifications.cancelScheduledNotificationAsync(x.identifier))
-  );
+  await removeNotificationsByChanelId(id);
   return id;
+};
+
+/**
+ * включить/выключить будильник
+ */
+const toggleAlarm = async (alarm: Alarm) => {
+  const newDisable = !alarm?.disable;
+  await transactionBd(
+    `update ${TABEL_NAME} set disable = ${Number(newDisable)} where id = '${
+      alarm.channelId
+    }';`
+  );
+  if (newDisable) {
+    await removeNotificationsByChanelId(alarm.channelId);
+  } else {
+    await createGroupNotificationsByChanelId({
+      id: alarm.channelId,
+      indexDays: alarm.days.map((x) => x.index),
+    });
+  }
 };
 
 /**
@@ -124,6 +131,9 @@ sample({ clock: addAlarmFx.doneData, target: getAllAlarmsFx });
 
 export const removeAlarmFx = createEffect({ handler: removeAlarm });
 sample({ clock: removeAlarmFx.doneData, target: getAllAlarmsFx });
+
+export const toggleAlarmFx = createEffect({ handler: toggleAlarm });
+sample({ clock: toggleAlarmFx.doneData, target: getAllAlarmsFx });
 
 /**
  * удаляет все будильники, натификашки
