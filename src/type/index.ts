@@ -8,5 +8,6 @@ export interface Alarm {
   days: Day[];
   channelId: string;
   time: string;
+  soundUri: string;
   disable?: boolean;
 }

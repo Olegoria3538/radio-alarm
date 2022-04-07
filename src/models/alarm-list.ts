@@ -13,14 +13,6 @@ import {
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 10);
 
 /**
- * тригер на получение уведомления
- */
-export const triggerNotifictionsGet = createEvent<Notifications.Notification>();
-Notifications.addNotificationReceivedListener((notification) => {
-  triggerNotifictionsGet(notification);
-});
-
-/**
  * подключение к бд
  */
 const db = SQLite.openDatabase("awensomeAlarms");
@@ -49,8 +41,9 @@ const transactionBd = (query: string) => {
  * создание таблицы
  */
 const TABEL_NAME = "ALARMS";
+// transactionBd(`DROP TABLE ${TABEL_NAME};`);
 transactionBd(
-  `create table if not exists ${TABEL_NAME}  (id string primary key not null, time text, days text, disable boolean);`
+  `create table if not exists ${TABEL_NAME}  (id string primary key not null, time text, days text, disable boolean, soundUri text);`
 );
 
 /**
@@ -63,6 +56,7 @@ const getAllAlarms = async () => {
     disable: 0 | 1;
     id: string;
     time: string;
+    soundUri: string;
   }[];
   const alarms = rawAlarms.map(
     (x): Alarm => ({
@@ -72,6 +66,7 @@ const getAllAlarms = async () => {
       days: (x?.days?.split(",") || [])
         .map((x) => getDayByIndex(Number(x)))
         .filter(Boolean) as Day[],
+      soundUri: x.soundUri,
     })
   );
   return alarms;
@@ -80,10 +75,18 @@ const getAllAlarms = async () => {
 /**
  * добавлить будильник в бд и завсети нотификашки
  */
-const addAlarm = async ({ time, days }: { time: string; days: number[] }) => {
+const addAlarm = async ({
+  time,
+  days,
+  soundUri,
+}: {
+  time: string;
+  days: number[];
+  soundUri: string;
+}) => {
   const id = nanoid();
   await transactionBd(
-    `insert into ${TABEL_NAME} (id, time, days, disable) values ('${id}', '${time}', '${days.join()}', ${0})`
+    `insert into ${TABEL_NAME} (id, time, days, disable, soundUri) values ('${id}', '${time}', '${days.join()}', ${0}, '${soundUri}')`
   );
   const [hh, mm] = time.split(":").map(Number);
   await createGroupNotificationsByChanelId({ id, indexDays: days, hh, mm });
@@ -138,3 +141,17 @@ sample({ clock: removeAlarmFx.doneData, target: getAllAlarmsFx });
 
 export const toggleAlarmFx = createEffect({ handler: toggleAlarm });
 sample({ clock: toggleAlarmFx.doneData, target: getAllAlarmsFx });
+
+/**
+ * тригер на получение уведомления
+ */
+const _triggerNotifictionsGet = createEvent<string>();
+export const triggerGetNotifictions = sample({
+  source: $alarmList,
+  clock: _triggerNotifictionsGet,
+  filter: (list, id) => list.some((x) => x.channelId === id),
+  fn: (list, id) => list.find((x) => x.channelId === id) as Alarm,
+});
+Notifications.addNotificationReceivedListener((notification) => {
+  _triggerNotifictionsGet((notification.request.trigger as any)?.channelId);
+});

@@ -21,6 +21,11 @@ export const AlarmItem = ({ alarm }: AlarmItem) => {
     ]);
   };
 
+  const timeFormat = useMemo(() => {
+    const [hh, mm] = time.split(":");
+    return [hh, mm].join(":");
+  }, [time]);
+
   return (
     <View style={styles.wrapper}>
       <View style={{ flex: 1 }}>
@@ -34,7 +39,7 @@ export const AlarmItem = ({ alarm }: AlarmItem) => {
             }}
             value={!disable}
           />
-          <Text style={styles.time}>{time}</Text>
+          <Text style={styles.time}>{timeFormat}</Text>
         </View>
         <View style={styles.row}>
           {days.map((x, i) => (
