@@ -134,14 +134,3 @@ sample({ clock: removeAlarmFx.doneData, target: getAllAlarmsFx });
 
 export const toggleAlarmFx = createEffect({ handler: toggleAlarm });
 sample({ clock: toggleAlarmFx.doneData, target: getAllAlarmsFx });
-
-/**
- * удаляет все будильники, натификашки
- */
-export const removeAllAlarmsFx = createEffect({
-  handler: async () => {
-    await Notifications.cancelAllScheduledNotificationsAsync();
-    return true;
-  },
-});
-$alarmList.on(removeAllAlarmsFx.doneData, () => []);
